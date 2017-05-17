@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package graficas;
 import java.awt.Color;
 import javax.swing.*;
@@ -34,7 +29,7 @@ public class TestPaintComponent extends JFrame{
 
 class NewPanel extends JPanel implements ActionListener, MouseListener {        
     private Timer time;
-    private int x,y,o,es,re,nub;
+    private int x,y,o,es,re,nub,ba;
     private final int ixc = 1200;
     int secuencia, secuencias;
     int up = 0;
@@ -122,12 +117,29 @@ class NewPanel extends JPanel implements ActionListener, MouseListener {
         }
         return fl;
     }
+    private boolean checkCollisionEne(){
+        Rectangle ene1 = this.getEne();
+        Rectangle band = this.getWin();
+        Rectangle man2 = new Rectangle(20, 615+y, 80, 100);
+        boolean en = false;
+        if(man2.intersects(ene1)){
+            en= true;
+            ba = 1;
+        }else if(man2.intersects(band)){
+            en= true;
+            ba = 2;
+        }
+        return en;
+    }
     @Override
     protected void paintComponent(Graphics g){
+        boolean en = checkCollisionEne();
+        if(en==false){
         super.paintComponent(g);
         boolean t = checkCollisions();
         boolean fl = checkCollision();
         Image fondo = loadImage("blue_background.png");
+        
         Image nube = loadImage("clouds.png");
         Image rojo = loadImage("red_background.png");
         for(x=0; x<50;x++){
@@ -183,6 +195,10 @@ class NewPanel extends JPanel implements ActionListener, MouseListener {
         g.drawRect(0, 615+y, 100, 95);
         g.drawRect(0, 615+y, 100, 100);
         g.drawRect(0-es, 716, 2000, 400);
+        g.fillRect(1400-es, 615, 20, 100);
+        g.setColor(Color.RED);
+        g.fillRect(1400-es, 575, 100, 50);
+        g.setColor(Color.BLACK);
         int co = 0;
         if(up==0){    
             g.drawImage(man, 0, 615+y, 100, 715+y, this.secuencia*119, 0, (this.secuencia*119)+119, 127, this);
@@ -232,6 +248,16 @@ class NewPanel extends JPanel implements ActionListener, MouseListener {
             g.drawString("0", 980, 125);
         }
         repaint();
+    }else{
+        if(ba==1){
+            g.setColor(Color.RED);
+            g.drawString("GAME OVER", 450, 450);
+        }else if(ba==2){
+            g.setColor(Color.BLUE);
+            g.drawString("YOU WIN", 450, 450);
+        }
+            time.stop();
+        }
     }
 
     @Override
@@ -290,7 +316,15 @@ class NewPanel extends JPanel implements ActionListener, MouseListener {
     public Rectangle get8(){
         return new Rectangle (635-es, 545, 55, 55);
     }
-    
+    public Rectangle getEne(){
+        return new Rectangle(322-es, 625, 100, 100);
+    }
+    public Rectangle getEne1(){
+        return new Rectangle(322-es, 625, 100, 100);
+    }
+    public Rectangle getWin(){
+        return new Rectangle(1400-es, 615, 20, 100);
+    }
     
     public Image loadImage(String imageName){
         ImageIcon ii = new ImageIcon(imageName);
